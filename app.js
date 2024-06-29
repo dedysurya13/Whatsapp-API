@@ -44,14 +44,17 @@ const client = new Client({
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
       '--no-zygote',
-      '--single-process', // <- this one doesn't works in Windows
       '--disable-gpu'
     ],
   },
-  authStrategy: new LocalAuth(),
+  authStrategy: new LocalAuth({
+    // dataPath: "sessions"
+  }),
   webVersionCache: {
+    // type: 'none'
     type: 'remote',
-    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
+    // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014547162-alpha.html'
   }
 });
 
