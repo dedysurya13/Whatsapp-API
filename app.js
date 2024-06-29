@@ -10,6 +10,7 @@ const fileUpload = require('express-fileupload');
 const axios = require('axios');
 const mime = require('mime-types');
 const cors = require('cors');
+const path = require('path');
 
 const port = process.env.PORT || 8000;
 
@@ -27,6 +28,8 @@ app.use(fileUpload({
   debug: true
 }));
 
+app.use('/dist', express.static(path.join(__dirname, 'dist')));
+app.use('/plugins', express.static(path.join(__dirname, 'plugins')));
 app.get('/', (req, res) => {
   res.sendFile('index.html', {
     root: __dirname
