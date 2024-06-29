@@ -33,7 +33,7 @@
     "puppeteer": "^18.2.1",
     "qrcode": "^1.4.4",
     "socket.io": "^2.5.0",
-    "whatsapp-web.js": "^latest"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#webpack-exodus"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.12",
