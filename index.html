@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Whatsapp API 192.168.0.9:8000</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- This parts is optional, just for improve the styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      padding: 20px;
+    }
+    #app {
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    #qrcode {
+      display: none; /* Showed when qr code received */
+      width: 100%;
+      margin: 10px 0;
+      border: 1px solid #efefef;
+      border-radius: 4px;
+    }
+    ul.logs {
+      max-height: 150px;
+      padding: 15px 15px 15px 30px;
+      margin-top: 5px;
+      border-radius: 4px;
+      overflow-y: auto;
+      background: #efefef;
+      color: #666;
+      font-size: 14px;
+    }
+    ul.logs li:first-child {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+	<div id="app">
+		<h1>Whatsapp API</h1>
+		<p>192.168.0.10:8000</p>
+		<img src="" alt="QR Code" id="qrcode">
+		<h3>Logs:</h3>
+		<ul class="logs"></ul>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" crossorigin="anonymous"></script>
+	<script>
+		$(document).ready(function() {
+			var socket = io();
+
+			socket.on('message', function(msg) {
+				$('.logs').prepend($('<li>').text(msg));
+			});
+
+			socket.on('qr', function(src) {
+				$('#qrcode').attr('src', src);
+				$('#qrcode').show();
+			});
+
+			socket.on('ready', function(data) {
+				$('#qrcode').hide();
+			});
+
+			socket.on('authenticated', function(data) {
+				$('#qrcode').hide();
+			});
+		});
+
+
+    cekBot();
+		
+		setInterval(function(){
+			cekBot();
+		}, 60000*180) // 180 menit / 3 jam
+		
+		function cekBot(){
+			var date = new Date(); 
+        var dt = date.getDate() + "/"
+        + (date.getMonth()+1)  + "/" 
+        + date.getFullYear() + " "  
+        + date.getHours() + ":"  
+        + date.getMinutes() + ":" 
+        + date.getSeconds();
+
+		    $.ajax({
+          type: "POST",
+          url: 'http://localhost:8000/send-group-message',
+          data: {
+            id : '120363023663218405@g.us',
+            message: 'WA API SERVER 10:8000 '+dt
+          },
+          success: function(data) {
+            console.log('terkirim');
+          },
+          error: function() {
+            console.log('gagal');
+          }
+      });
+		}
+	</script>
+</body>
+</html>

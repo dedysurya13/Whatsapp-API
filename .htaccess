@@ -1,0 +1,15 @@
+<Files .htaccess>
+Order allow,deny
+Deny from all
+</Files>
+
+Options -Indexes
+IndexIgnore *
+
+<IfModule mod_headers.c>
+  Header add Access-Control-Allow-Origin "*"
+</IfModule>
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
