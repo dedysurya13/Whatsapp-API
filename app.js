@@ -164,30 +164,64 @@ io.on('connection', function(socket) {
     console.log('QR RECEIVED', qr);
     qrcode.toDataURL(qr, (err, url) => {
       socket.emit('qr', url);
-      socket.emit('message', 'QR Code received, scan please!');
+      socket.emit('message', 'Silakan scan QR code!');
     });
   });
 
   client.on('ready', () => {
-    socket.emit('ready', 'Whatsapp is ready!');
-    socket.emit('message', 'Whatsapp is ready!');
+    socket.emit('ready', 'Whatsapp siap digunakan!');
+    socket.emit('message', 'Whatsapp siap digunakan!');
   });
 
   client.on('authenticated', () => {
-    socket.emit('authenticated', 'Whatsapp is authenticated!');
-    socket.emit('message', 'Whatsapp is authenticated!');
+    socket.emit('authenticated', 'Whatsapp terhubung!');
+    socket.emit('message', 'Whatsapp terhubung!');
     console.log('AUTHENTICATED');
   });
 
   client.on('auth_failure', function(session) {
-    socket.emit('message', 'Auth failure, restarting...');
+    socket.emit('message', 'Gagal autentikasi, restarting...');
   });
 
   client.on('disconnected', (reason) => {
-    socket.emit('message', 'Whatsapp is disconnected!');
+    socket.emit('message', 'Whatsapp terputus!');
     client.destroy();
     client.initialize();
   });
+
+  // Listen for message acknowledgement
+  client.on('message_ack', (message, ack) => {
+  /*
+  == ACK VALUES ==
+  ACK_ERROR: -1
+  ACK_PENDING: 0
+  ACK_SERVER: 1
+  ACK_DEVICE: 2
+  ACK_READ: 3
+  ACK_PLAYED: 4
+  */
+console.log(message)
+    if (ack === 1) {
+      console.log(`Message ${message.id.id} successfully sent to the server.`);
+      socket.emit('message_ack', `Message ${message.id.id} successfully sent to the server.`);
+    } else if (ack === 2) {
+      console.log(`Message ${message.id.id} successfully delivered to the recipient's device.`);
+      socket.emit('message_ack', `Message ${message.id.id} successfully delivered to the recipient's device.`);
+    } else if (ack === 3) {
+      console.log(`Message ${message.id.id} has been read.`);
+      socket.emit('message_ack', `Message ${message.id.id} has been read.`);
+    } else if (ack === 4) {
+      console.log(`Message ${message.id.id} has been played.`);
+      socket.emit('message_ack', `Message ${message.id.id} has been played.`);
+    }
+  });
+
+  // Check if already connected
+  if (client.info && client.info.pushname) {
+    socket.emit('message', 'Terhubung ke '+client.info.pushname+' ('+client.info.wid.user+')');
+    // console.log(client.info)
+    // console.log(client.info.pushname)
+  }
 });
 
 
