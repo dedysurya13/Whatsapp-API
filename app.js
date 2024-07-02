@@ -51,14 +51,20 @@ const client = new Client({
     ],
   },
   authStrategy: new LocalAuth({
-    // dataPath: "sessions"
+    // clientId: "client1", 
+    // dataPath: './.wwebjs_auth'
   }),
-  webVersionCache: {
+  // webVersionCache: {
     // type: 'none'
-    type: 'remote',
-    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
+    // type: 'remote',
+    // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
     // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014547162-alpha.html'
-  }
+  // }
+});
+
+client.on('ready', async () => {
+  const version = await client.getWWebVersion();
+  console.log(`WWeb v${version}`);
 });
 
 client.on('message', msg => {
