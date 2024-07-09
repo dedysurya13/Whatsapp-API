@@ -17,6 +17,7 @@ const port = process.env.PORT || 8000;
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+var connectedSocket = null;
 
 app.use(cors())
 
@@ -158,70 +159,80 @@ client.initialize();
 
 // Socket IO
 io.on('connection', function(socket) {
+  connectedSocket = socket; //simpan connected socket
   socket.emit('message', 'Connecting...');
+  socket.emit('notification', 'Connecting...');
 
   client.on('qr', (qr) => {
     console.log('QR RECEIVED', qr);
     qrcode.toDataURL(qr, (err, url) => {
       socket.emit('qr', url);
       socket.emit('message', 'Silakan scan QR code!');
+      socket.emit('notification', 'Silakan scan QR code!');
     });
   });
 
   client.on('ready', () => {
     socket.emit('ready', 'Whatsapp siap digunakan!');
     socket.emit('message', 'Whatsapp siap digunakan!');
+    socket.emit('notification', 'Whatsapp siap digunakan!');
   });
 
   client.on('authenticated', () => {
-    socket.emit('authenticated', 'Whatsapp terhubung!');
-    socket.emit('message', 'Whatsapp terhubung!');
-    console.log('AUTHENTICATED');
+    socket.emit('authenticated', 'AUTHENTICATED!');
+    // socket.emit('message', `BOT Whatsapp terhubung ke ${client.info.pushname} (${client.info.wid.user}).`);
+    // console.log(`BOT Whatsapp terhubung ke ${client.info.pushname} (${client.info.wid.user}).`);
   });
 
   client.on('auth_failure', function(session) {
     socket.emit('message', 'Gagal autentikasi, restarting...');
-  });
-
-  client.on('disconnected', (reason) => {
-    socket.emit('message', 'Whatsapp terputus!');
-    client.destroy();
-    client.initialize();
+    socket.emit('notification', 'Gagal autentikasi, restarting...');
   });
 
   // Listen for message acknowledgement
   client.on('message_ack', (message, ack) => {
-  /*
-  == ACK VALUES ==
-  ACK_ERROR: -1
-  ACK_PENDING: 0
-  ACK_SERVER: 1
-  ACK_DEVICE: 2
-  ACK_READ: 3
-  ACK_PLAYED: 4
-  */
-console.log(message)
+    /*
+    == ACK VALUES ==
+    ACK_ERROR: -1   => error kirim ke server
+    ACK_PENDING: 0  => pending kirim ke server
+    ACK_SERVER: 1   => berhasil dikirim ke server
+    ACK_DEVICE: 2   => berhasil dikirim ke penerima
+    ACK_READ: 3     => telah dibaca
+    ACK_PLAYED: 4   => telah diputar (audio/video)
+    */
     if (ack === 1) {
-      console.log(`Message ${message.id.id} successfully sent to the server.`);
-      socket.emit('message_ack', `Message ${message.id.id} successfully sent to the server.`);
+      // console.log(`Pesan ID:${message.id.id} ke berhasil dikirim ke server.`);
+      socket.emit('message_ack', `Pesan ID:${message.id.id} berhasil dikirim ke server.`);
     } else if (ack === 2) {
-      console.log(`Message ${message.id.id} successfully delivered to the recipient's device.`);
-      socket.emit('message_ack', `Message ${message.id.id} successfully delivered to the recipient's device.`);
-    } else if (ack === 3) {
-      console.log(`Message ${message.id.id} has been read.`);
-      socket.emit('message_ack', `Message ${message.id.id} has been read.`);
-    } else if (ack === 4) {
-      console.log(`Message ${message.id.id} has been played.`);
-      socket.emit('message_ack', `Message ${message.id.id} has been played.`);
+      // console.log(`Pesan ID:${message.id.id} ke berhasil dikirim ke ${(message.to).replace(/@c\.us$/, '')}.`);
+      socket.emit('message_ack', `Pesan ID:${message.id.id} berhasil dikirim ke ${(message.to).replace(/@c\.us$/, '')}.`);
+    } else if (ack === -1) {
+      // console.log(`Pesan ID:${message.id.id} ke berhasil dikirim ke ${(message.to).replace(/@c\.us$/, '')}.`);
+      socket.emit('message_ack', `Pesan gagal dikirim ke ${(message.to).replace(/@c\.us$/, '')}. Keterangan server: ${(message.message)}`);
     }
   });
 
   // Check if already connected
   if (client.info && client.info.pushname) {
-    socket.emit('message', 'Terhubung ke '+client.info.pushname+' ('+client.info.wid.user+')');
-    // console.log(client.info)
-    // console.log(client.info.pushname)
+    socket.emit('notification', `BOT Whatsapp terhubung ke ${client.info.pushname} (${client.info.wid.user}).`);
   }
+
+  // Interval check for connection status
+  const checkConnectionStatus = setInterval(() => {
+    if (client.info && client.info.pushname) {
+      socket.emit('notification', `BOT Whatsapp terhubung ke ${client.info.pushname} (${client.info.wid.user}).`);
+    } else {
+      socket.emit('notification', 'Whatsapp tidak terhubung.');
+    }
+  }, 5000);
+
+  client.on('disconnected', (reason) => {
+    clearInterval(checkConnectionStatus);
+    socket.emit('notification', 'Whatsapp terputus!');
+    client.destroy();
+    client.initialize();
+    connectedSocket = null;
+  });
 });
 
 
@@ -254,18 +265,22 @@ app.post('/send-message', [
   const isRegisteredNumber = await checkRegisteredNumber(number);
 
   if (!isRegisteredNumber) {
+    connectedSocket.emit('message', `Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar`);
+    connectedSocket.emit('response', `{ status: false, message: 'Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar!'}`);
     return res.status(422).json({
       status: false,
-      message: 'The number is not registered'
+      message: 'Nomor tidak terdaftar!'
     });
   }
 
   client.sendMessage(number, message).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -278,15 +293,17 @@ app.post('/send-media-local', async (req, res) => {
   const number = phoneNumberFormatter(req.body.number);
   const caption = req.body.caption;
   const media = MessageMedia.fromFilePath('./local-file.png');
- 
+
   client.sendMessage(number, media, {
     caption: caption
   }).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -304,11 +321,13 @@ app.post('/send-media-upload', async (req, res) => {
   client.sendMessage(number, media, {
     caption: caption
   }).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -338,11 +357,13 @@ app.post('/send-media-link', async (req, res) => {
   client.sendMessage(number, media, {
     caption: caption
   }).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -370,11 +391,13 @@ app.post('/send-button', async (req, res) => {
   client.sendMessage(number, media, {
     caption: caption
   }).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -423,20 +446,24 @@ app.post('/send-group-message', [
   if (!chatId) {
     const group = await findGroupByName(groupName);
     if (!group) {
+      connectedSocket.emit('message', `Grup ${groupName} tidak ditemukan!`);
+      connectedSocket.emit('response', `{ status: false, message: "Grup ${groupName} tidak ditemukan!"}`);
       return res.status(422).json({
         status: false,
-        message: 'No group found with name: ' + groupName
+        message: `Grup ${groupName} tidak ditemukan!`
       });
     }
     chatId = group.id._serialized;
   }
 
   client.sendMessage(chatId, message).then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
       response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -466,20 +493,24 @@ app.post('/clear-message', [
   const isRegisteredNumber = await checkRegisteredNumber(number);
 
   if (!isRegisteredNumber) {
+    connectedSocket.emit('message', `Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar`);
+    connectedSocket.emit('response', `{ status: false, message: 'Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar!'}`);
     return res.status(422).json({
       status: false,
-      message: 'The number is not registered'
+      message: 'Nomor tidak terdaftar!'
     });
   }
 
   const chat = await client.getChatById(number);
   
-  chat.clearMessages().then(status => {
+  chat.clearMessages().then(response => {
+    connectedSocket.emit('response', response);
     res.status(200).json({
       status: true,
-      response: status
+      response: response
     });
   }).catch(err => {
+    connectedSocket.emit('response', err);
     res.status(500).json({
       status: false,
       response: err
@@ -488,5 +519,5 @@ app.post('/clear-message', [
 });
 
 server.listen(port, function() {
-  console.log('App running on *: ' + port);
+  console.log('Whatsapp BOT berjalan pada PORT: ' + port);
 });
