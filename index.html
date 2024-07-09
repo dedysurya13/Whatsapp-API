@@ -12,11 +12,21 @@
 
 	<div id="app">
 		<h1>Whatsapp API</h1>
-		<p id="serverWwebJs"></p>
+    <hr>
+    <br>
+    Status <span id="badgeStatusServer" class="badge badge-secondary">Loading...</span>
+    <br>
+		Server <span id="serverWwebJs" class="badge badge-secondary">Loading...</span>
 		<img src="" alt="QR Code" id="qrcode">
 		<h3>Logs:</h3>
 		<ul class="logs"></ul>
 	</div>
+  <div id="response" class="response">
+  <h3>Response Server:</h3>
+<pre id="responseServer">
+//response server
+</pre>
+  </div>
 
 	<script src="plugins/jquery/jquery.min.js" crossorigin="anonymous"></script>
 	<script src="plugins/socket.io/socket.io.js" crossorigin="anonymous"></script>
