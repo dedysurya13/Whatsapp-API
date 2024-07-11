@@ -3,6 +3,7 @@ whatsapp-session*.json
 package-lock.json
 downloaded-media/
 .wwebjs_auth
+.wwebjs_cache
 /#BACKUP
 .jsonBAK
 .rar
