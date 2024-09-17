@@ -65,6 +65,7 @@ const client = new Client({
 
 client.on('ready', async () => {
   const version = await client.getWWebVersion();
+  console.log(`Whatsapp siap digunakan!`);
   console.log(`WWeb v${version}`);
 });
 
@@ -118,41 +119,41 @@ client.on('message', msg => {
     });
   }
   // Downloading media
-  if (msg.hasMedia) {
-    msg.downloadMedia().then(media => {
-      // To better understanding
-      // Please look at the console what data we get
-      console.log(media);
+  // if (msg.hasMedia) {
+  //   msg.downloadMedia().then(media => {
+  //     // To better understanding
+  //     // Please look at the console what data we get
+  //     console.log(media);
 
-      if (media) {
-        // The folder to store: change as you want!
-        // Create if not exists
-        const mediaPath = './downloaded-media/';
+  //     if (media) {
+  //       // The folder to store: change as you want!
+  //       // Create if not exists
+  //       const mediaPath = './downloaded-media/';
 
-        if (!fs.existsSync(mediaPath)) {
-          fs.mkdirSync(mediaPath);
-        }
+  //       if (!fs.existsSync(mediaPath)) {
+  //         fs.mkdirSync(mediaPath);
+  //       }
 
-        // Get the file extension by mime-type
-        const extension = mime.extension(media.mimetype);
+  //       // Get the file extension by mime-type
+  //       const extension = mime.extension(media.mimetype);
         
-        // Filename: change as you want! 
-        // I will use the time for this example
-        // Why not use media.filename? Because the value is not certain exists
-        const filename = new Date().getTime();
+  //       // Filename: change as you want! 
+  //       // I will use the time for this example
+  //       // Why not use media.filename? Because the value is not certain exists
+  //       const filename = new Date().getTime();
 
-        const fullFilename = mediaPath + filename + '.' + extension;
+  //       const fullFilename = mediaPath + filename + '.' + extension;
 
-        // Save to file
-        try {
-          //fs.writeFileSync(fullFilename, media.data, { encoding: 'base64' }); 
-          console.log('File downloaded successfully!', fullFilename);
-        } catch (err) {
-          console.log('Failed to save the file:', err);
-        }
-      }
-    });
-  }
+  //       // Save to file
+  //       try {
+  //         // fs.writeFileSync(fullFilename, media.data, { encoding: 'base64' }); 
+  //         console.log('File downloaded successfully!', fullFilename);
+  //       } catch (err) {
+  //         console.log('Failed to save the file:', err);
+  //       }
+  //     }
+  //   });
+  // }
 });
 
 client.initialize();
@@ -340,6 +341,7 @@ app.post('/send-media-link', async (req, res) => {
   const number = phoneNumberFormatter(req.body.number);
   const caption = req.body.caption;
   const fileUrl = req.body.file;
+  const fileName = req.body.title || 'Media';
 
   // const media = MessageMedia.fromFilePath('./image-example.png');
   // const file = req.files.file;
@@ -352,7 +354,7 @@ app.post('/send-media-link', async (req, res) => {
     return response.data.toString('base64');
   });
 
-  const media = new MessageMedia(mimetype, attachment, 'Media');
+  const media = new MessageMedia(mimetype, attachment, fileName);
 
   client.sendMessage(number, media, {
     caption: caption
@@ -519,5 +521,6 @@ app.post('/clear-message', [
 });
 
 server.listen(port, function() {
+  console.log('Menyiapkan Whatsapp...');
   console.log('Whatsapp BOT berjalan pada PORT: ' + port);
 });
