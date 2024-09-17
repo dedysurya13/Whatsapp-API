@@ -6,5 +6,7 @@ downloaded-media/
 .wwebjs_cache
 /#BACKUP
 .jsonBAK
+.BACKUP
 .rar
 .zip
+.log
