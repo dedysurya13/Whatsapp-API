@@ -40,7 +40,7 @@ $('#titleWwebJs, #serverWwebJs').html(wWebJs)
 
 setInterval(function(){
   $('.logs').empty();
-}, 1000*60*60*1) //1 jam
+}, 1000*60*60*24) //24 jam
 
 setInterval(function(){
   // cekBot();
