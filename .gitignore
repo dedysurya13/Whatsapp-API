@@ -10,3 +10,5 @@ downloaded-media/
 .rar
 .zip
 .log
+*.BACKUP
+*.log
