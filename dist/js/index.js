@@ -43,7 +43,7 @@ setInterval(function(){
 }, 1000*60*60*24) //24 jam
 
 setInterval(function(){
-  // cekBot();
+  cekBot();
 }, 1000*60*60*3) //3 jam
 
 function cekBot(){
@@ -60,7 +60,7 @@ function cekBot(){
       console.log('terkirim');
     },
     error: function() {
-      console.log('gagal dikirim');
+      console.log('gagal kirim');
     }
   });
 }
