@@ -30,7 +30,7 @@ $(document).ready(function() {
   socket.on('authenticated', function(data) {
     $('#qrcode').hide();
     setTimeout(function(){
-      // cekBot();
+      cekBot();
     },5000)
   });
 });
@@ -60,7 +60,7 @@ function cekBot(){
       console.log('terkirim');
     },
     error: function() {
-      console.log('gagal');
+      console.log('gagal dikirim');
     }
   });
 }
