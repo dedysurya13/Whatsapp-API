@@ -13,7 +13,7 @@
 - Clone or download this repo
 - Enter to the project directory
 - Run `npm install`
-- Run 
+- Run Whatsapp-API
   -  `node run start` for general use
   -  `node run start:dev` run with nodemon
   -  `node run start:auto` auto run when app crash (the error log will be in the error.log file)
