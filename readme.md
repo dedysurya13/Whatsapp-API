@@ -13,7 +13,10 @@
 - Clone or download this repo
 - Enter to the project directory
 - Run `npm install`
-- Run `node start.js`
+- Run 
+  -  `node run start` for general use
+  -  `node run start:dev` run with nodemon
+  -  `node run start:auto` auto run when app crash (the error log will be in the error.log file)
 - Open browser and go to address `http://localhost:8000`
 - Scan the QR Code
 - Enjoy!
