@@ -317,7 +317,8 @@ app.post('/send-media-upload', async (req, res) => {
   const number = phoneNumberFormatter(req.body.number);
   const caption = req.body.caption;
   const file = req.files.file;
-  const media = new MessageMedia(file.mimetype, file.data.toString('base64'), file.name);
+  const fileName = req.body.title || file.name || 'Media';
+  const media = new MessageMedia(file.mimetype, file.data.toString('base64'), fileName);
 
   client.sendMessage(number, media, {
     caption: caption

@@ -45,6 +45,7 @@
 - `number`: the recipient number
 - `file`: file's path
 - `caption` (optional): file's caption
+- `title` (optional): file's title/name
 
 ### Send media from link
 `http://localhost:8000/send-media-link`
