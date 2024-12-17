@@ -521,6 +521,66 @@ app.post('/clear-message', [
   })
 });
 
+app.post('/delete-message', [
+  body('number').notEmpty(),
+], async (req, res) => {
+  // Validasi input
+  const errors = validationResult(req).formatWith(({ msg }) => msg);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      status: false,
+      message: errors.mapped()
+    });
+  }
+
+  const number = phoneNumberFormatter(req.body.number);
+  const limit = req.body.limit || 1;
+  const everyone = req.body.everyone || true;
+
+  const isRegisteredNumber = await checkRegisteredNumber(number);
+
+  if (!isRegisteredNumber) {
+    connectedSocket.emit('message', `Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar`);
+    connectedSocket.emit('response', `{ status: false, message: 'Nomor ${number.replace(/@c\.us$/, '')} tidak terdaftar!'}`);
+    return res.status(422).json({
+      status: false,
+      message: 'Nomor tidak terdaftar!'
+    });
+  }
+
+  try {
+    const chat = await client.getChatById(number);
+
+    const messages = await chat.fetchMessages({ limit: limit }); // message limit
+    const deletePromises = messages
+      .filter(msg => msg.fromMe)
+      .map(async (msg) => {
+        try {
+          await msg.delete(everyone); // true: delete for everyone, false: delete for me
+          console.log(`Pesan dihapus: ${msg.body}`);
+        } catch (err) {
+          console.error('Gagal menghapus pesan:', err);
+        }
+      });
+
+    await Promise.all(deletePromises);
+
+    connectedSocket.emit('response', `Pesan yang dikirim Anda ke ${number.replace(/@c\.us$/, '')} berhasil dihapus.`);
+    res.status(200).json({
+      status: true,
+      message: `Pesan berhasil dihapus untuk nomor ${number.replace(/@c\.us$/, '')}`
+    });
+  } catch (err) {
+    console.error(err);
+    connectedSocket.emit('response', err);
+    res.status(500).json({
+      status: false,
+      message: 'Gagal menghapus pesan!',
+      error: err.message
+    });
+  }
+});
+
 server.listen(port, function() {
   console.log('Menyiapkan Whatsapp...');
   console.log('Whatsapp BOT berjalan pada PORT: ' + port);
