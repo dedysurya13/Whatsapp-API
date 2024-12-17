@@ -65,3 +65,23 @@
 - `message`: the message
 
 **Note:** to get the groups info (including ID & name), send a message to the API number `!groups`. The API will replying with the groups info.
+
+### Clear Message
+Clear your message from your device.
+`http://localhost:8000/clear-message`
+
+**Paramaters:**
+- `number`: the recipient number
+
+### Delete Message
+You can delete your own message from recipient Whatsapp.
+`http://localhost:8000/delete-message`
+
+**Paramaters:**
+- `number`: the recipient number
+- `limit` (optional): limit latest message that you can delete (default is 1)
+- `everyone` (optional): delete for everyone (default is true; true: delete for everyone, false: delete for me)
+
+**Limitation**
+- You can only delete 1 (one) message per request. If you set limit more than 1, the API will remove the oldest messages from the limit filter.
+- You can only delete messages if they have not exceeded the WhatsApp deletion time limit.
