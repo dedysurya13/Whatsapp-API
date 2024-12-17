@@ -67,14 +67,16 @@
 **Note:** to get the groups info (including ID & name), send a message to the API number `!groups`. The API will replying with the groups info.
 
 ### Clear Message
-Clear your message from your device.\n
+Clear your message from your device.
+
 `http://localhost:8000/clear-message`
 
 **Paramaters:**
 - `number`: the recipient number
 
 ### Delete Message
-You can delete your own message from recipient Whatsapp.\n
+You can delete your own message from recipient Whatsapp.
+
 `http://localhost:8000/delete-message`
 
 **Paramaters:**
