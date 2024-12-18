@@ -521,6 +521,7 @@ app.post('/clear-message', [
   })
 });
 
+// Delete your own message on spesific chat
 app.post('/delete-message', [
   body('number').notEmpty(),
 ], async (req, res) => {
