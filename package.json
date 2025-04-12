@@ -1,6 +1,6 @@
 {
   "name": "whatsapp-api",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Whatsapp api by Ngekoding and redeveloped by Tim IT RSU Islam Cawas",
   "main": "app.js",
   "scripts": {
