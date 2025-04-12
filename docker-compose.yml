@@ -5,11 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: whatsapp-api:latest
+    container_name: whatsapp-api
     ports:
-      - "8000:8000"
+      - "${PORT}:8000"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=production
+      - PORT=${PORT}
     restart: always
