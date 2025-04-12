@@ -12,3 +12,4 @@ downloaded-media/
 .log
 *.BACKUP
 *.log
+.env
