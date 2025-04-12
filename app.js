@@ -42,24 +42,26 @@ const client = new Client({
   puppeteer: {
     headless: true,
     args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--disable-gpu'
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--disable-gpu",
+      "--single-process",
+      "--disable-extensions",
     ],
   },
   authStrategy: new LocalAuth({
-    // clientId: "client1", 
+    // clientId: "client1",
     // dataPath: './.wwebjs_auth'
   }),
   // webVersionCache: {
-    // type: 'none'
-    // type: 'remote',
-    // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
-    // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014547162-alpha.html'
+  // type: 'none'
+  // type: 'remote',
+  // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html',
+  // remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014547162-alpha.html'
   // }
 });
 
