@@ -1,3 +1,4 @@
+
 # Whatsapp API Tutorial
 
 **This is the implementation example of <a href="https://github.com/pedroslopez/whatsapp-web.js">whatsapp-web.js</a>**
@@ -10,6 +11,9 @@
 > **Node ``v18+`` is required.**
 
 ## How to use?
+Rename file `.env-example` to `.env` and change the PORT variable if you like, otherwise the default PORT will be 8000.
+
+### Run with node.js
 - Clone or download this repo
 - Enter to the project directory
 - Run `npm install`
@@ -17,6 +21,21 @@
   -  `node run start` for general use
   -  `node run start:dev` run with nodemon
   -  `node run start:auto` auto run when app crash (the error log will be in the error.log file)
+- Open browser and go to address `http://localhost:8000`
+- Scan the QR Code
+- Enjoy!
+### Run with Docker
+- Clone or download this repo
+- Enter to the project directory
+- Run `docker compose up -d`
+- Open browser and go to address `http://localhost:8000`
+- Scan the QR Code
+- Enjoy!
+### Run with PM2
+- Clone or download this repo
+- Enter to the project directory
+- Run `pm2 start`
+- Run `pm2 monit` for monitoring
 - Open browser and go to address `http://localhost:8000`
 - Scan the QR Code
 - Enjoy!
