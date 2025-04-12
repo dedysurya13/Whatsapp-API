@@ -41,26 +41,3 @@ $('#titleWwebJs, #serverWwebJs').html(wWebJs)
 setInterval(function(){
   $('.logs').empty();
 }, 1000*60*60*24) //24 jam
-
-setInterval(function(){
-  cekBot();
-}, 1000*60*60*3) //3 jam
-
-function cekBot(){
-  let dt = moment().locale('id').format('LLLL')
-
-  $.ajax({
-    type: "POST",
-    url: 'http://localhost:8000/send-group-message',
-    data: {
-      id : '120363023663218405@g.us',
-      message: wWebJs+'\n'+dt
-    },
-    success: function(data) {
-      console.log('terkirim');
-    },
-    error: function() {
-      console.log('gagal kirim');
-    }
-  });
-}
