@@ -36,7 +36,7 @@
     "puppeteer": "^18.2.1",
     "qrcode": "^1.4.4",
     "socket.io": "^2.5.0",
-    "whatsapp-web.js": "^1.26.0"
+    "whatsapp-web.js": "*"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.12",
