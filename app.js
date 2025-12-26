@@ -240,8 +240,13 @@ io.on('connection', function(socket) {
 
 
 const checkRegisteredNumber = async function(number) {
-  const isRegistered = await client.isRegisteredUser(number);
-  return isRegistered;
+  try {
+    const isRegistered = await client.isRegisteredUser(number);
+    return isRegistered;
+  } catch (error) {
+    console.error('Gagal mengecek nomor: ', error.message);
+    return false; 
+  }
 }
 
 // Send message
