@@ -9,6 +9,10 @@ $(document).ready(function() {
     $('#badgeStatusServer').text(msg);
   });
 
+  socket.on('version', function(msg) {
+    $('#wwebVersion').text(msg);
+  });
+
   socket.on('response', function(msg) {
     $('#responseServer').html(JSON.stringify(msg, null, 4));
     // alert(msg)
