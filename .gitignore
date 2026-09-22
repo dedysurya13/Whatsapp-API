@@ -13,3 +13,4 @@ downloaded-media/
 *.BACKUP
 *.log
 .env
+*.zip
