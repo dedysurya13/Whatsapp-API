@@ -1,0 +1,392 @@
+{
+  "info": {
+    "_postman_id": "c1f7289d-64bc-4889-9a2c-7b2434e34981",
+    "name": "WhatsApp API Collection",
+    "description": "Koleksi Postman resmi untuk WhatsApp API Service. Mencakup Unified Endpoint (/send) dan Legacy Endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "targetNumber",
+      "value": "081234567890",
+      "type": "string"
+    },
+    {
+      "key": "targetGroupName",
+      "value": "IT Support Team",
+      "type": "string"
+    },
+    {
+      "key": "targetGroupId",
+      "value": "123456789123456798@g.us",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Unified Endpoint (/send)",
+      "description": "Endpoint terpadu dengan fitur Smart Auto-Detect untuk segala jenis aksi pesan.",
+      "item": [
+        {
+          "name": "1.1 Kirim Teks Personal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"{{targetNumber}}\",\n  \"message\": \"Halo! Ini pesan tes dari Postman menggunakan Unified Endpoint.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Mengirimkan pesan teks ke nomor kontak individu. Format nomor akan dibersihkan dan otomatis dikonversi ke kode negara 62."
+          },
+          "response": []
+        },
+        {
+          "name": "1.2 Kirim Pesan ke Grup (Nama Grup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"group\": \"{{targetGroupName}}\",\n  \"message\": \"Pemberitahuan: Tes pengiriman pesan ke grup via Postman.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Mencari grup berdasarkan nama dan mengirimkan pesan teks ke grup tersebut."
+          },
+          "response": []
+        },
+        {
+          "name": "1.3 Kirim Pesan ke Grup (Chat ID)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"{{targetGroupId}}\",\n  \"message\": \"Pemberitahuan: Tes pengiriman via Chat ID grup WhatsApp.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Mengirim pesan teks langsung ke Chat ID grup berakhiran @g.us."
+          },
+          "response": []
+        },
+        {
+          "name": "1.4 Kirim Media via URL Link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"{{targetNumber}}\",\n  \"file\": \"https://raw.githubusercontent.com/pedroslopez/whatsapp-web.js/main/whatsapp-web-js-logo.png\",\n  \"filename\": \"logo.png\",\n  \"caption\": \"Berikut adalah logo whatsapp-web.js yang dikirim dari tautan URL.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Server akan mengunduh media dari tautan URL eksternal dan mengirimkannya ke nomor tujuan."
+          },
+          "response": []
+        },
+        {
+          "name": "1.5 Kirim Media via Upload File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "to",
+                  "value": "{{targetNumber}}",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "caption",
+                  "value": "Berikut lampiran berkas yang diunggah via form-data.",
+                  "type": "text"
+                },
+                {
+                  "key": "filename",
+                  "value": "Berkas.pdf",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Mengunggah file biner langsung dari komputer melalui form-data multipart."
+          },
+          "response": []
+        },
+        {
+          "name": "1.6 Kirim Media dari Local Server Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"{{targetNumber}}\",\n  \"file_path\": \"./local-file.png\",\n  \"caption\": \"Pesan dengan lampiran file dari local path server.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Mengirimkan file yang tersimpan di storage lokal server bot."
+          },
+          "response": []
+        },
+        {
+          "name": "1.7 Hapus Pesan Terkirim (Delete Message)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"delete\",\n  \"to\": \"{{targetNumber}}\",\n  \"limit\": 1,\n  \"everyone\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Menghapus pesan yang dikirimkan oleh bot ke penerima (delete for everyone)."
+          },
+          "response": []
+        },
+        {
+          "name": "1.8 Bersihkan Chat (Clear History)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"clear\",\n  \"to\": \"{{targetNumber}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["send"]
+            },
+            "description": "Membersihkan seluruh riwayat pesan pada chat tertentu dari sisi perangkat bot."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Legacy Endpoints",
+      "description": "Endpoint spesifik versi sebelumnya untuk menjaga kompatibilitas sistem lama.",
+      "item": [
+        {
+          "name": "2.1 POST /send-message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"{{targetNumber}}\",\n  \"message\": \"Tes pesan via legacy endpoint /send-message\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send-message",
+              "host": ["{{baseUrl}}"],
+              "path": ["send-message"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.2 POST /send-media-link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"{{targetNumber}}\",\n  \"file\": \"https://raw.githubusercontent.com/pedroslopez/whatsapp-web.js/main/whatsapp-web-js-logo.png\",\n  \"caption\": \"Logo via legacy endpoint\",\n  \"title\": \"Logo.png\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send-media-link",
+              "host": ["{{baseUrl}}"],
+              "path": ["send-media-link"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.3 POST /send-media-upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "number",
+                  "value": "{{targetNumber}}",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "caption",
+                  "value": "Lampiran via legacy endpoint",
+                  "type": "text"
+                },
+                {
+                  "key": "title",
+                  "value": "Lampiran.jpg",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send-media-upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["send-media-upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.4 POST /send-group-message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{targetGroupName}}\",\n  \"message\": \"Halo grup via legacy endpoint!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/send-group-message",
+              "host": ["{{baseUrl}}"],
+              "path": ["send-group-message"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.5 POST /delete-message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"{{targetNumber}}\",\n  \"limit\": 1,\n  \"everyone\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/delete-message",
+              "host": ["{{baseUrl}}"],
+              "path": ["delete-message"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.6 POST /clear-message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"{{targetNumber}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clear-message",
+              "host": ["{{baseUrl}}"],
+              "path": ["clear-message"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
