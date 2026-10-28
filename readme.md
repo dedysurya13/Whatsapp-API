@@ -74,7 +74,7 @@ docker compose up -d
 
 ### 4. Pengujian Cepat via Postman
 Berkas koleksi Postman yang siap pakai telah disediakan di root proyek:
-- [`Whatsapp-API.postman_collection.json`](file:///Whatsapp-API.postman_collection.json)
+- [`Whatsapp-API.postman_collection.json`](https://raw.githubusercontent.com/dedysurya13/Whatsapp-API/refs/heads/main/Whatsapp-API.postman_collection.json)
 
 Anda cukup membuka aplikasi Postman, klik tombol **Import**, dan pilih berkas tersebut. Seluruh request untuk Unified Endpoint (`/send`) maupun Legacy Endpoint beserta variabel environment (`baseUrl`, `targetNumber`, `targetGroupName`) sudah siap digunakan.
 
