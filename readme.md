@@ -82,7 +82,7 @@ Anda cukup membuka aplikasi Postman, klik tombol **Import**, dan pilih berkas te
 
 ## Dokumentasi API
 
-### 🚀 Unified Endpoint (Rekomendasi Utama)
+### Unified Endpoint (Rekomendasi Utama)
 Gunakan satu endpoint ini untuk semua interaksi pesan. Sistem akan secara otomatis mendeteksi tipe aksi berdasarkan payload yang Anda kirimkan.
 
 - **URL:** `http://localhost:8000/send`
