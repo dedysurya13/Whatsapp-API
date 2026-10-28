@@ -1,108 +1,201 @@
+# WhatsApp API Service
 
-# Whatsapp API Tutorial
+Layanan RESTful API WhatsApp berbasis Node.js dan [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) dengan autentikasi sesi lokal (`LocalAuth`) dan dashboard monitoring realtime berbasis WebSocket (`Socket.IO`).
 
-**This is the implementation example of <a href="https://github.com/pedroslopez/whatsapp-web.js">whatsapp-web.js</a>**
+Dikembangkan oleh **Tim IT RSU Islam Cawas** (berbasis proyek awal oleh *Ngekoding*).
 
 > [!IMPORTANT]
-> **It is not guaranteed you will not be blocked by using this method. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.**
-> <br><br>**Please always use the latest version of** <a href="https://github.com/pedroslopez/whatsapp-web.js">**whatsapp-web.js**</a>.
+> **Pemberitahuan Kepatuhan WhatsApp:**
+> WhatsApp tidak menyediakan API resmi gratis untuk otomasi tanpa melalui WhatsApp Business Cloud/On-Premises API. Penggunaan library ini berisiko terkena pemblokiran nomor (*banned*) jika digunakan untuk pengiriman pesan spam atau melanggar ketentuan layanan WhatsApp. Gunakan secara bijak dan selalu perbarui dependensi secara berkala.
 
 > [!NOTE]
-> **Node ``v18+`` is required.**
+> **Prasyarat Sistem:** Memerlukan **Node.js versi 18.0.0 atau lebih tinggi**.
 
-## How to use?
-Rename file `.env-example` to `.env` and change the PORT variable if you like, otherwise the default PORT will be 8000.
+---
 
-### Run with node.js
-- Clone or download this repo
-- Enter to the project directory
-- Run `npm install`
-- Run Whatsapp-API
-  -  `node run start` for general use
-  -  `node run start:dev` run with nodemon
-  -  `node run start:auto` auto run when app crash (the error log will be in the error.log file)
-- Open browser and go to address `http://localhost:8000`
-- Scan the QR Code
-- Enjoy!
-### Run with Docker
-- Clone or download this repo
-- Enter to the project directory
-- Run `docker compose up -d`
-- Open browser and go to address `http://localhost:8000`
-- Scan the QR Code
-- Enjoy!
-### Run with PM2
-- Clone or download this repo
-- Enter to the project directory
-- Run `pm2 start`
-- Run `pm2 monit` for monitoring
-- Open browser and go to address `http://localhost:8000`
-- Scan the QR Code
-- Enjoy!
+## Fitur Utama
 
-## **Example usage**
-### Send message
-`http://localhost:8000/send-message`
+- **Unified API Endpoint (`/send`):** Satu endpoint pintar untuk segala kebutuhan (pesan teks, kirim media file/URL/lokal, kirim grup, hapus pesan, dan bersihkan chat).
+- **Format Nomor Otomatis:** Otomatis mengubah awalan nomor lokal (`08xxx`) ke kode negara (`628xxx`).
+- **Verifikasi Nomor Terdaftar:** Memeriksa status nomor sebelum mengirim guna mencegah error pengiriman.
+- **Deteksi ACK Realtime:** Memantau status terkirim dan mengenali jika nomor belum terdaftar di bot.
+- **Sesi Login Persisten:** Menggunakan `LocalAuth` sehingga sesi login tersimpan di folder `.wwebjs_auth/` tanpa perlu scan ulang setiap kali restart.
+- **Web Dashboard Monitoring:** Antarmuka visual untuk memantau status bot, versi WhatsApp Web, QR Code login, riwayat log, dan respons API secara realtime.
 
-**Paramaters:**
-- `number`: the recipient number
-- `message`: the message
+---
 
-### Send local media
-`http://localhost:8000/send-media-local`
+## Panduan Instalasi & Menjalankan Server
 
-**Paramaters:**
-- `number`: the recipient number
-- `caption` (optional): file's caption
+### 1. Konfigurasi Awal
+Salin file environment dan tentukan port yang diinginkan (default: `8000`):
+```bash
+cp .env-example .env
+```
 
-**Note:** Currently send-media-local sends files from a hard-coded path in app.js. You can change it if needed.
+Pasang semua dependensi proyek:
+```bash
+npm install
+```
 
-### Send uploaded media
-`http://localhost:8000/send-media-upload`
+### 2. Menjalankan Aplikasi
 
-**Paramaters:**
-- `number`: the recipient number
-- `file`: file's path
-- `caption` (optional): file's caption
-- `title` (optional): file's title/name
+Pilih salah satu metode berikut sesuai kebutuhan:
 
-### Send media from link
-`http://localhost:8000/send-media-link`
+#### A. Node.js Langsung
+- **Mode Standar:**
+  ```bash
+  npm start
+  ```
+- **Mode Pengembangan (Auto-reload dengan nodemon):**
+  ```bash
+  npm run start:dev
+  ```
+- **Mode Auto-Crash Recovery:**
+  ```bash
+  npm run start:auto
+  ```
+  *(Log error otomatis dicatat ke dalam file `error.log`)*
 
-**Paramaters:**
-- `number`: the recipient number
-- `file`: file's url
-- `caption` (optional): file's caption
-- `title` (optional): file's title/name
+#### B. Menggunakan PM2 (Rekomendasi untuk Lingkungan Produksi)
+```bash
+pm2 start ecosystem.config.js
+pm2 monit
+```
 
-### Send group message
-`http://localhost:8000/send-group-message`
+#### C. Menggunakan Docker
+```bash
+docker compose up -d
+```
 
-**Paramaters:**
-- `id` (optional if name given): the chat ID
-- `name` (optional): group name
-- `message`: the message
+### 3. Autentikasi WhatsApp
+1. Buka browser dan akses: `http://localhost:8000`
+2. Pindai (scan) QR Code yang muncul di dashboard menggunakan aplikasi WhatsApp di ponsel Anda.
+3. Setelah status berubah menjadi **"Whatsapp siap digunakan!"**, bot siap menerima permintaan API.
 
-**Note:** to get the groups info (including ID & name), send a message to the API number `!groups`. The API will replying with the groups info.
+### 4. Pengujian Cepat via Postman
+Berkas koleksi Postman yang siap pakai telah disediakan di root proyek:
+- [`Whatsapp-API.postman_collection.json`](file:///Whatsapp-API.postman_collection.json)
 
-### Clear Message
-Clear your message from your device.
+Anda cukup membuka aplikasi Postman, klik tombol **Import**, dan pilih berkas tersebut. Seluruh request untuk Unified Endpoint (`/send`) maupun Legacy Endpoint beserta variabel environment (`baseUrl`, `targetNumber`, `targetGroupName`) sudah siap digunakan.
 
-`http://localhost:8000/clear-message`
+---
 
-**Paramaters:**
-- `number`: the recipient number
+## Dokumentasi API
 
-### Delete Message
-You can delete your own message from recipient Whatsapp.
+### 🚀 Unified Endpoint (Rekomendasi Utama)
+Gunakan satu endpoint ini untuk semua interaksi pesan. Sistem akan secara otomatis mendeteksi tipe aksi berdasarkan payload yang Anda kirimkan.
 
-`http://localhost:8000/delete-message`
+- **URL:** `http://localhost:8000/send`
+- **Method:** `POST`
+- **Content-Type:** `application/json` atau `multipart/form-data`
 
-**Paramaters:**
-- `number`: the recipient number
-- `limit` (optional): limit latest message that you can delete (default is 1)
-- `everyone` (optional): delete for everyone (default is true; true: delete for everyone, false: delete for me)
+#### 1. Kirim Pesan Teks (Individu)
+```json
+{
+  "to": "081234567890",
+  "message": "Halo, ini pesan konfirmasi pendaftaran."
+}
+```
 
-**Limitation**
-- You can only delete 1 (one) message per request. If you set limit more than 1, the API will remove the oldest messages from the limit filter.
-- You can only delete messages if they have not exceeded the WhatsApp deletion time limit.
+#### 2. Kirim Pesan ke Grup
+Dapat menggunakan nama grup atau ID grup (`...0@g.us`):
+```json
+{
+  "group": "IT Support Team",
+  "message": "Pemberitahuan: Pemeliharaan server telah selesai."
+}
+```
+*Atau menggunakan Chat ID grup:*
+```json
+{
+  "to": "120363012345678901@g.us",
+  "message": "Pemberitahuan: Pemeliharaan server telah selesai."
+}
+```
+
+#### 3. Kirim Media via Tautan / URL
+```json
+{
+  "to": "081234567890",
+  "file": "https://example.com/berkas/hasil-lab.pdf",
+  "filename": "Hasil-Laboratorium.pdf",
+  "caption": "Terlampir dokumen hasil pemeriksaan Anda."
+}
+```
+
+#### 4. Kirim Media via Upload File
+Kirim dengan format `multipart/form-data`:
+- `to`: `081234567890`
+- `file`: *(file binary yang diunggah)*
+- `caption`: `Lampiran gambar` *(opsional)*
+- `filename`: `Laporan.jpg` *(opsional)*
+
+#### 5. Kirim Media dari Penyimpanan Lokal Server
+```json
+{
+  "to": "081234567890",
+  "file_path": "./local-file.png",
+  "caption": "Pesan dengan lampiran file lokal server"
+}
+```
+
+#### 6. Hapus Pesan yang Telah Dikirim (Delete Message)
+```json
+{
+  "action": "delete",
+  "to": "081234567890",
+  "limit": 1,
+  "everyone": true
+}
+```
+
+#### 7. Bersihkan Riwayat Chat (Clear Chat)
+```json
+{
+  "action": "clear",
+  "to": "081234567890"
+}
+```
+
+---
+
+### Endpoint Spesifik (Legacy / Kompatibilitas)
+
+Endpoint berikut tetap dipertahankan untuk menjamin kompatibilitas dengan sistem lama yang telah terintegrasi:
+
+| Method | Endpoint | Parameter Utama | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/send-message` | `number`, `message` | Mengirim pesan teks individu |
+| `POST` | `/send-media-upload` | `number`, `file` (multipart), `caption`, `title` | Mengunggah dan mengirim file |
+| `POST` | `/send-media-link` | `number`, `file` (URL), `caption`, `title` | Mengirim file dari link eksternal |
+| `POST` | `/send-media-local` | `number`, `caption` | Mengirim file statis lokal `./local-file.png` |
+| `POST` | `/send-group-message`| `id` atau `name`, `message` | Mengirim pesan ke grup |
+| `POST` | `/clear-message` | `number` | Menghapus riwayat chat |
+| `POST` | `/delete-message` | `number`, `limit`, `everyone` | Menghapus pesan terkirim |
+
+---
+
+## Perintah Chat WhatsApp (Bot Commands)
+
+Anda dapat mengirimkan perintah berikut secara langsung ke nomor WhatsApp bot untuk pengujian:
+
+- `!ping` : Bot akan membalas `pong`.
+- `good morning` : Bot akan membalas `selamat pagi`.
+- `!groups` : Bot akan membalas dengan daftar semua grup yang diikuti beserta ID dan namanya.
+
+---
+
+## Batasan & Catatan Teknis
+
+1. **Format Nomor Tujuan:**
+   - Awalan `08xx`, `+628xx`, maupun `628xx` didukung secara otomatis oleh helper pemformat.
+2. **Penghapusan Pesan:**
+   - Hanya pesan yang dikirim oleh bot (`fromMe: true`) yang dapat dihapus untuk semua orang (*delete for everyone*).
+   - Pesan hanya dapat dihapus selama belum melewati batas waktu toleransi yang ditentukan oleh WhatsApp.
+3. **Penyimpanan Sesi:**
+   - Direktori `.wwebjs_auth/` dan `.wwebjs_cache/` menyimpan cache dan sesi browser. Jangan menghapus folder ini kecuali jika Anda ingin melakukan reset sesi login.
+
+---
+
+## Lisensi
+Didistribusikan di bawah lisensi [MIT](LICENSE).
